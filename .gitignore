@@ -1,0 +1,26 @@
+### Java ###
+# Compiled class file
+*.class
+
+# Log file
+*.log
+
+# Package Files #
+*.jar
+*.zip
+*.tar.gz
+*.rar
+
+### Gradle ###
+# Config files directory
+.gradle
+
+# Build files directory
+build/
+
+# Gradle wrapper files directory
+gradle
+
+### Intellij Idea ###
+# Config files
+.idea
