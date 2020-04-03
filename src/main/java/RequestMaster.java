@@ -13,6 +13,7 @@ import org.apache.http.message.BasicHeader;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.function.Function;
 
 public class RequestMaster {
     private static final int STATUS_OK = 200;
@@ -51,28 +52,22 @@ public class RequestMaster {
         return result;
     }
 
-    public static boolean sendPostRequest(String urlAddress, int attemptsToConnect,
-                                          String fileName, InputStream inputFileStream) {
+    public static <I> boolean sendPostRequest(String urlAddress, int attemptsToConnect, String fileName, I data,
+                                              Function<I, InputStream> mapper) {
         boolean isCompleted = false;
         try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
             HttpPost httpPost = new HttpPost(urlAddress);
             httpPost.addHeader(ACCEPT_ALL_HEADER);
 
-            HttpEntity entity = MultipartEntityBuilder
-                    .create()
-                    .addBinaryBody("file", inputFileStream, DEFAULT_CONTENT_TYPE, fileName)
-                    .build();
-            httpPost.setEntity(entity);
-
             for (int i = 0; i < attemptsToConnect && !isCompleted; i++) {
+                InputStream inputStream = mapper.apply(data);
+                HttpEntity entity = MultipartEntityBuilder
+                        .create()
+                        .addBinaryBody("file", inputStream, DEFAULT_CONTENT_TYPE, fileName)
+                        .build();
+                httpPost.setEntity(entity);
                 try (CloseableHttpResponse response = httpclient.execute(httpPost)) {
                     StatusLine statusLine = response.getStatusLine();
-                    String responseMessage = new String(response.getEntity().getContent().readAllBytes());
-                    System.out.println(responseMessage);
-                    if (responseMessage.length() > 10) {
-                        System.out.println("Find");
-                    }
-                    // Get hold of the response entity
                     if (statusLine.getStatusCode() == STATUS_OK) {
                         isCompleted = true;
                     }
