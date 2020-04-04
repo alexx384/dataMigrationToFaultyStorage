@@ -68,8 +68,11 @@ public class RequestMaster {
                 httpPost.setEntity(entity);
                 try (CloseableHttpResponse response = httpclient.execute(httpPost)) {
                     StatusLine statusLine = response.getStatusLine();
-                    if (statusLine.getStatusCode() == STATUS_OK) {
+                    int statusCode = statusLine.getStatusCode();
+                    if (statusCode == STATUS_OK) {
                         isCompleted = true;
+                    } else if (400 <= statusCode && statusCode < 500) {
+                        break;
                     }
                 }
             }
