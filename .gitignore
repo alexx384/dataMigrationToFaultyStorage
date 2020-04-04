@@ -19,7 +19,7 @@
 build/
 
 # Gradle wrapper files directory
-gradle
+!gradle/wrapper/gradle-wrapper.jar
 
 ### Intellij Idea ###
 # Config files
